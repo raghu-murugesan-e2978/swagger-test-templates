@@ -8,7 +8,7 @@
 
 ## Usage
 
-Install via npm
+Install via npm - HarishRaj
 
 ```bash
 npm install --save swagger-test-templates

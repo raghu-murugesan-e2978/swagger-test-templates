@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/apigee-127/swagger-test-templates.git"
+    "url": "git+ssh://git@github.com/HarishRaj11/swagger-test-templates.git"
   },
   "keywords": [
     "Swagger",
@@ -18,24 +18,15 @@
   ],
   "swagger-test-templates@1.0.0": [
     {
-      "name": "Mohsen Azimi",
-      "email": "me@azimi.me",
-      "url": "http://azimi.me"
-    },
-    {
-      "name": "Linjie Peng",
-      "email": "elsa.peng@hotmail.com"
-    },
-    {
-      "name": "Noah Dietz",
-      "email": "noahdietz24@gmail.com"
+      "name": "Harish Raj",
+      "email": "harish.ramesh@freshworkscom"
     }
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/apigee-127/swagger-test-templates/issues"
+    "url": "https://github.com/HarishRaj11/swagger-test-templates/issues"
   },
-  "homepage": "https://github.com/apigee-127/swagger-test-templates#readme",
+  "homepage": "https://github.com/HarishRaj11/swagger-test-templates#readme",
   "devDependencies": {
     "chai": "^3.0.0",
     "dotenv": "^1.2.0",

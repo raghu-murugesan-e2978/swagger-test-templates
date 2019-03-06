@@ -517,8 +517,9 @@ function testGen(swagger, config) {
   var schemaTemp;
   var environment;
   var ndx = 0;
-
-  config.templatesPath = (config.templatesPath) ? config.templatesPath : path.join(__dirname, 'templates');
+  var lang = 'js';
+  
+  config.templatesPath = (config.templatesPath) ? config.templatesPath : path.join(__dirname, 'templates', lang);
 
   swagger = deref(swagger);
   source = fs.readFileSync(path.join(config.templatesPath, '/schema.handlebars'), 'utf8');
