@@ -517,8 +517,8 @@ function testGen(swagger, config) {
   var schemaTemp;
   var environment;
   var ndx = 0;
-  var lang = 'js';
-  
+  var lang = 'rb';
+
   config.templatesPath = (config.templatesPath) ? config.templatesPath : path.join(__dirname, 'templates', lang);
 
   swagger = deref(swagger);
@@ -549,7 +549,7 @@ function testGen(swagger, config) {
   if (!targets || targets.length === 0) {
     _.forEach(result, function(results) {
       output.push({
-        name: '-test.js',
+        name: '-test.' + lang,
         test: results
       });
     });
