@@ -517,7 +517,7 @@ function testGen(swagger, config) {
   var schemaTemp;
   var environment;
   var ndx = 0;
-  var lang = 'rb';
+  var lang = config.lang;
 
   config.templatesPath = (config.templatesPath) ? config.templatesPath : path.join(__dirname, 'templates', lang);
 
