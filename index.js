@@ -191,8 +191,6 @@ function getData(swagger, apiPath, operation, response, config, info) {
   // request url case
   if (config.testModule === 'request') {
     data.path = url.format({
-      protocol: swagger.schemes !== undefined ? swagger.schemes[0] : 'http',
-      host: swagger.host !== undefined ? swagger.host : 'localhost:10010',
       pathname: requestPath
     });
   } else {
