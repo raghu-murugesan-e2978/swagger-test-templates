@@ -6,7 +6,7 @@
 
       {{/validateResponse}}
       response = RestClient.get(
-        '{{pathify path pathParams}}',
+        $ENDPOINT + '{{pathify path pathParams}}',
         {
           'Content-Type': '{{contentType}}'{{#if headerParameters}},
           {{#each headerParameters}}'{{this.name}}': {{requestDataParamFormatter this.name 'string' ../requestParameters}}{{#unless @last}},
@@ -18,23 +18,23 @@
       parsed_response = JSON.parse(response.body)
         {{#is assertion 'expect'}}
         {{#if default}}
-        expect(response.code).to.equal('DEFAULT RESPONSE CODE HERE');
+        expect(response.code).to.equal('DEFAULT RESPONSE CODE HERE')
         {{else}}
         expect(response.code).to eq({{responseCode}})
         {{/if}}
         {{/is}}
         {{#is assertion 'should'}}
         {{#if default}}
-        res.statusCode.should.equal('DEFAULT RESPONSE CODE HERE');
+        res.statusCode.should.equal('DEFAULT RESPONSE CODE HERE')
         {{else}}
-        res.statusCode.should.equal({{responseCode}});
+        res.statusCode.should.equal({{responseCode}})
         {{/if}}
         {{/is}}
         {{#is assertion 'assert'}}
         {{#if default}}
-        assert.equal(res.statusCode, 'DEFAULT RESPONSE CODE HERE');
+        assert.equal(res.statusCode, 'DEFAULT RESPONSE CODE HERE')
         {{else}}
-        assert.equal(res.statusCode, {{responseCode}});
+        assert.equal(res.statusCode, {{responseCode}})
         {{/if}}
         {{/is}}
 
@@ -43,10 +43,10 @@
         expect(JSON::Validator.validate(schema, parsed_response)).to eq(true)
         {{/is}}
         {{#is assertion 'should'}}
-        validator.validate(body, schema).should.be.true;
+        validator.validate(body, schema).should.be.true
         {{/is}}
         {{#is assertion 'assert'}}
-        assert.true(validator.validate(body, schema));
+        assert.true(validator.validate(body, schema))
         {{/is}}
         {{else}}
         {{#isPdfMediaType returnType}}

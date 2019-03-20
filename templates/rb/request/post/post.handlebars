@@ -6,7 +6,7 @@ it 'should respond with {{length description}}{{#if requestMessage}} and {{reque
 
     {{/validateResponse}}
     response = RestClient.post(
-      '{{pathify path pathParams}}',
+      $ENDPOINT + '{{pathify path pathParams}}',
       {
         'Content-Type': '{{contentType}}'{{#if headerParameters}},
         {{#each headerParameters}}'{{this.name}}': {{requestDataParamFormatter this.name 'string' ../requestParameters}}{{#unless @last}},
