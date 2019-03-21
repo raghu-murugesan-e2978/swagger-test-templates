@@ -13,5 +13,8 @@ describe '{{description}}' do
 {{/each}}
 end
 def define_end_point
-  $ENDPOINT = YAML.safe_load(File.read(File.expand_path('../../../../config/application.yml', __FILE__)))[ENV["environment"]]["endpoint"]
+    if ENV["environment"] == nil
+        ENV["environment"] = "server"
+    end
+    $ENDPOINT = YAML.safe_load(File.read(File.expand_path('../../../../config/application.yml', __FILE__)))[ENV["environment"]]["endpoint"]
 end
