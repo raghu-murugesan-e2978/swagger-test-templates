@@ -6,7 +6,7 @@
 
       {{/validateResponse}}
       response = RestClient.get(
-        $ENDPOINT + '{{pathify path pathParams}}',
+        URI.join($ENDPOINT, '{{pathify path pathParams}}').to_s,
         {
           'Content-Type': '{{contentType}}'{{#if headerParameters}},
           {{#each headerParameters}}'{{this.name}}': {{requestDataParamFormatter this.name 'string' ../requestParameters}}{{#unless @last}},
