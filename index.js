@@ -497,6 +497,32 @@ function testGenPath(swagger, apiPath, config) {
   return output;
 }
 
+function generateDeveloperPortal(swagger, config) {
+    var source;
+    var schemaTemp;
+    var paths = swagger.paths;
+    var targets = config.pathName;
+    var result = [];
+    var output = [];
+    var i = 0;
+    var source;
+    var filename;
+    var schemaTemp;
+    var environment;
+    var ndx = 0;
+    source = fs.readFileSync(path.join(config.templatesPath, '/html_template.handlebars'), 'utf8');
+    environment = handlebars.compile(source, {noEscape: true});
+    var data = swagger;
+    result.push(environment(data));
+    _.forEach(result, function(results) {
+      output.push({
+        name: swagger.info.description + "." + config.lang,
+        test: results
+      });
+    });
+    return output;
+}
+
 /**
  * Builds unit test stubs for all paths specified by the configuration
  * @public
@@ -520,6 +546,11 @@ function testGen(swagger, config) {
   config.templatesPath = (config.templatesPath) ? config.templatesPath : path.join(__dirname, 'templates', lang);
 
   swagger = deref(swagger);
+
+  if ( lang == "html" ) {
+    return generateDeveloperPortal(swagger, config);
+  }
+
   source = fs.readFileSync(path.join(config.templatesPath, '/schema.handlebars'), 'utf8');
   schemaTemp = handlebars.compile(source, {noEscape: true});
   handlebars.registerPartial('schema-partial', schemaTemp);
