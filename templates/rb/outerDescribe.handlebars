@@ -3,6 +3,7 @@ require 'rest-client'
 require 'json-schema'
 require 'httparty'
 require 'safe_yaml'
+Dir["./schema/*.rb"].each {|file| require file }
 
 describe '{{description}}' do
     before(:all) do
