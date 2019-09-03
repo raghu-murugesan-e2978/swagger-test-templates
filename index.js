@@ -303,7 +303,7 @@ function testGenSchema(swagger, apiPath, operation, config, info) {
     });
       // get the data
     data = {
-      path: apiPath,
+      path: apiPath.replace(/\//g, "").replace("{", "_").replace("}", ""),
       schemas: result
     };
 
