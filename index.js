@@ -282,7 +282,6 @@ function testGenSchema(swagger, apiPath, operation, response, config, info) {
       var schemaFn = handlebars.compile(source, {noEscape: true});
       result = schemaFn(data);
 
-
       return result;
 }
 
@@ -626,14 +625,15 @@ function testGen(swagger, config) {
   };
 
     _.forEach(paths, function(paths, pathName) {
+      var schemaForTest = '';
         _.forEach(swagger.paths[pathName], function(operations, operation){
             _.forEach(swagger.paths[pathName][operation].responses, function(responses, responseCode){
-                        output.push({
-                            name: 'schema-' + sanitize((pathName.replace(/\//g, '-').substring(1))) + '-' + operation + '-' + responseCode + '.' + config.lang,
-                              test: testGenSchema(swagger, pathName, operation, responseCode, config, info)
-                        });
-
+              schemaForTest += testGenSchema(swagger, pathName, operation, responseCode, config, info) + "\n\n";
             });
+        });
+        output.push({
+          name: 'schema/' + sanitize((pathName.replace(/\//g, '-').substring(1))) + '.' + config.lang,
+            test: schemaForTest
         });
       });
   return output;
@@ -918,6 +918,28 @@ function filterOutOptionalQueryParams(data) {
     return !optional || dataProvided;
   });
   return data;
+}
+
+function testGenSchemaClass(swagger, apiPath, operation, response, config, info) {
+
+    var result;
+    var templateFn;
+    var source;
+    var data;
+
+      // get the data
+    data = getData(swagger, apiPath, operation, response, config, info);
+
+
+      // compile template source and return test string
+      var templatePath = path.join(config.templatesPath, 'schemaClassDefinitions.handlebars');
+
+      source = fs.readFileSync(templatePath, 'utf8');
+      var schemaFn = handlebars.compile(source, {noEscape: true});
+      result = schemaFn(data);
+
+
+      return result;
 }
 
 function testGenSchema(swagger, apiPath, operation, response, config, info) {
@@ -1282,17 +1304,17 @@ function testGen(swagger, config) {
   };
 
     _.forEach(paths, function(paths, pathName) {
+        var schemaForTest = '';
         _.forEach(swagger.paths[pathName], function(operations, operation){
             _.forEach(swagger.paths[pathName][operation].responses, function(responses, responseCode){
-                        output.push({
-                            name: 'schema/schema_' + sanitize((pathName.replace(/\//g, '-').substring(1))) + '_' + operation + '_' + responseCode + '.' + config.lang,
-                              test: testGenSchema(swagger, pathName, operation, responseCode, config, info)
-                        });
-
+                schemaForTest += testGenSchema(swagger, pathName, operation, responseCode, config, info) + "\n\n";
             });
         });
+        output.push({
+             name: 'schema/' + sanitize((pathName.replace(/\//g, '-').substring(1))) + '.' + config.lang,
+             test: schemaForTest
+        });
       });
-    console.log(output);
   return output;
 }
 
