@@ -271,8 +271,12 @@ function testGenSchemaDefinition(swagger, apiPath, operation, response, response
     var source;
     var data = {
       schema: JSON.stringify(swagger['paths'][apiPath][operation]['responses'][responseCode]['schema'], null, 2),
+<<<<<<< HEAD
       responseCode: responseCode,
       operation: operation
+=======
+      responseCode: responseCode
+>>>>>>> 2842118b5c433891f35f1f4b92d6d7d8ce596a9b
     };
 
       // compile template source and return test string
