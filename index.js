@@ -271,12 +271,8 @@ function testGenSchemaDefinition(swagger, apiPath, operation, response, response
     var source;
     var data = {
       schema: JSON.stringify(swagger['paths'][apiPath][operation]['responses'][responseCode]['schema'], null, 2),
-<<<<<<< HEAD
       responseCode: responseCode,
       operation: operation
-=======
-      responseCode: responseCode
->>>>>>> 2842118b5c433891f35f1f4b92d6d7d8ce596a9b
     };
 
       // compile template source and return test string
@@ -289,23 +285,25 @@ function testGenSchemaDefinition(swagger, apiPath, operation, response, response
       return result;
 }
 
-function testGenSchema(swagger, apiPath, operation, config, info) {
+function testGenSchema(swagger, apiPath, config, info) {
 
     var result = [];
     var templateFn;
     var source;
     var data;
     var schemaFn;
-    var responses = swagger.paths[apiPath][operation].responses;
+    var responses;
 
 
     source = fs.readFileSync(path.join(config.templatesPath, 'schemaClassDefinitions.handlebars'), 'utf8');
     schemaFn = handlebars.compile(source, {noEscape: true});
-
-    _.forEach(responses, function(response, responseCode){
-      result = result.concat(testGenSchemaDefinition(swagger, apiPath, operation, response, responseCode, config, info));
-      //console.log(result);
-    });
+    _.forEach(swagger.paths[apiPath], function(operations, operation){
+         responses = swagger.paths[apiPath][operation].responses;
+          _.forEach(responses, function(response, responseCode){
+            result = result.concat(testGenSchemaDefinition(swagger, apiPath, operation, response, responseCode, config, info));
+            //console.log(result);
+          });
+        });
       // get the data
     data = {
       path: apiPath.replace(/\//g, "").replace("{", "_").replace("}", ""),
@@ -1296,10 +1294,7 @@ function testGen(swagger, config) {
   };
 
     _.forEach(paths, function(paths, pathName) {
-        var schemaForTest = '';
-        _.forEach(swagger.paths[pathName], function(operations, operation){
-              schemaForTest += testGenSchema(swagger, pathName, operation, config, info) + "\n\n";
-        });
+        var schemaForTest = testGenSchema(swagger, pathName, config, info) + "\n\n";
         //console.log(schemaForTest);
         output.push({
              name: '../schema/' + sanitize((pathName.replace(/\//g, '-').substring(1))) + '.' + config.lang,

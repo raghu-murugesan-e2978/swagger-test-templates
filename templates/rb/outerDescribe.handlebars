@@ -3,7 +3,7 @@ require 'rest-client'
 require 'json-schema'
 require 'httparty'
 require 'safe_yaml'
-require '../schema/{{schemaFile}}.rb'
+require "#{__dir__}/{{schemaFile}}.rb"
 
 schema_object = {{schemaClass}}.new
 
