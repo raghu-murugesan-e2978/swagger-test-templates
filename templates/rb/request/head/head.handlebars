@@ -1,5 +1,5 @@
   it('should respond with {{length description}}{{#if requestMessage}} and {{requestMessage}}{{/if}}', function(done) {
-
+      schema_object = {{pathName}}.new
       request({
         URI.join($ENDPOINT, '{{pathify path pathParams}}').to_s,
         {{#ifCond queryParameters queryApiKey}}

@@ -34,7 +34,7 @@
 
         {{#validateResponse returnType noSchema}}
         {{#is assertion 'expect'}}
-        expect(JSON::Validator.validate({{path}}_{{responseCode}}.getSchema(), parsed_response)).to eq(true)
+        expect(JSON::Validator.validate(schema_object.getSchema_{{operation}}_{{responseCode}}(), parsed_response)).to eq(true)
         {{/is}}
         {{#is assertion 'should'}}
         validator.validate(body, schema).should.be.true

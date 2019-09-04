@@ -264,16 +264,16 @@ function filterOutOptionalQueryParams(data) {
   return data;
 }
 
-function testGenSchema(swagger, apiPath, operation, response, config, info) {
+function testGenSchemaDefinition(swagger, apiPath, operation, response, responseCode, config, info) {
 
-    var result;
+    var result = [];
     var templateFn;
     var source;
-    var data;
-
-      // get the data
-    data = getData(swagger, apiPath, operation, response, config, info);
-
+    var data = {
+      schema: JSON.stringify(swagger['paths'][apiPath][operation]['responses'][responseCode]['schema'], null, 2),
+      responseCode: responseCode,
+      operation: operation
+    };
 
       // compile template source and return test string
       var templatePath = path.join(config.templatesPath, 'schema.handlebars');
@@ -282,6 +282,34 @@ function testGenSchema(swagger, apiPath, operation, response, config, info) {
       var schemaFn = handlebars.compile(source, {noEscape: true});
       result = schemaFn(data);
 
+      return result;
+}
+
+function testGenSchema(swagger, apiPath, operation, config, info) {
+
+    var result = [];
+    var templateFn;
+    var source;
+    var data;
+    var schemaFn;
+    var responses = swagger.paths[apiPath][operation].responses;
+
+
+    source = fs.readFileSync(path.join(config.templatesPath, 'schemaClassDefinitions.handlebars'), 'utf8');
+    schemaFn = handlebars.compile(source, {noEscape: true});
+
+    _.forEach(responses, function(response, responseCode){
+      result = result.concat(testGenSchemaDefinition(swagger, apiPath, operation, response, responseCode, config, info));
+      //console.log(result);
+    });
+      // get the data
+    data = {
+      path: apiPath.replace(/\//g, "").replace("{", "_").replace("}", ""),
+      schemas: result
+    };
+
+      result = schemaFn(data);
+//console.log(result);
       return result;
 }
 
@@ -737,7 +765,8 @@ function getData(swagger, apiPath, operation, response, config, info) {
     loadName: '',
     requests: 0,
     concurrent: 0,
-    pathParams: {}
+    pathParams: {},
+    operation: operation
   };
 
   // get pathParams from config
@@ -920,49 +949,6 @@ function filterOutOptionalQueryParams(data) {
   return data;
 }
 
-function testGenSchemaClass(swagger, apiPath, operation, response, config, info) {
-
-    var result;
-    var templateFn;
-    var source;
-    var data;
-
-      // get the data
-    data = getData(swagger, apiPath, operation, response, config, info);
-
-
-      // compile template source and return test string
-      var templatePath = path.join(config.templatesPath, 'schemaClassDefinitions.handlebars');
-
-      source = fs.readFileSync(templatePath, 'utf8');
-      var schemaFn = handlebars.compile(source, {noEscape: true});
-      result = schemaFn(data);
-
-
-      return result;
-}
-
-function testGenSchema(swagger, apiPath, operation, response, config, info) {
-
-    var result;
-    var templateFn;
-    var source;
-    var data;
-
-      // get the data
-    data = getData(swagger, apiPath, operation, response, config, info);
-
-
-      // compile template source and return test string
-      var templatePath = path.join(config.templatesPath, 'schema.handlebars');
-
-      source = fs.readFileSync(templatePath, 'utf8');
-      var schemaFn = handlebars.compile(source, {noEscape: true});
-      result = schemaFn(data);
-
-
-      return result;
-}
 
 /**
  * Builds a unit test stubs for the response code of a apiPath's operation
@@ -1187,7 +1173,9 @@ function testGenPath(swagger, apiPath, config) {
     tests: result,
     importValidator: info.importValidator,
     importEnv: info.importEnv,
-    importArete: info.importArete
+    importArete: info.importArete,
+    schemaFile : apiPath.replace(/\//g, '-').substring(1),
+    schemaClass : apiPath.replace(/\//g, '-').substring(1).replace("{", "").replace("}", "").replace("-", "_")
   };
 
   if (!allDeprecated) {
@@ -1306,15 +1294,15 @@ function testGen(swagger, config) {
     _.forEach(paths, function(paths, pathName) {
         var schemaForTest = '';
         _.forEach(swagger.paths[pathName], function(operations, operation){
-            _.forEach(swagger.paths[pathName][operation].responses, function(responses, responseCode){
-                schemaForTest += testGenSchema(swagger, pathName, operation, responseCode, config, info) + "\n\n";
-            });
+              schemaForTest += testGenSchema(swagger, pathName, operation, config, info) + "\n\n";
         });
+        //console.log(schemaForTest);
         output.push({
-             name: 'schema/' + sanitize((pathName.replace(/\//g, '-').substring(1))) + '.' + config.lang,
+             name: '../schema/' + sanitize((pathName.replace(/\//g, '-').substring(1))) + '.' + config.lang,
              test: schemaForTest
         });
       });
+      //console.log(output);
   return output;
 }
 
