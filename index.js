@@ -1234,7 +1234,7 @@ function testGen(swagger, config) {
   if (!targets || targets.length === 0) {
     _.forEach(result, function(results) {
       output.push({
-        name: '-test.' + lang,
+        name: '_spec.' + lang,
         test: results
       });
     });
