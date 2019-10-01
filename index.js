@@ -1257,10 +1257,10 @@ function testGen(swagger, config) {
       // for output file name, replace / with -, and truncate the first /
       // eg: /hello/world -> hello-world
       filename = sanitize((target.replace(/\//g, '-').substring(1))
-        + '-test.js');
+        + '_spec.rb');
       // for base path file name, change it to base-path
       if (target === '/') {
-        filename = 'base-path' + '-test.js';
+        filename = 'base-path' + '_spec.rb';
       }
       output.push({
         name: filename,
@@ -1292,6 +1292,8 @@ function testGen(swagger, config) {
     security: [],
     loadTest: null
   };
+
+  // Schema builder for the tests under schema/schema_{{operations}}
 
     _.forEach(paths, function(paths, pathName) {
         var schemaForTest = testGenSchema(swagger, pathName, config, info) + "\n\n";
