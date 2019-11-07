@@ -305,8 +305,10 @@ function testGenSchema(swagger, apiPath, config, info) {
           });
         });
       // get the data
+    var p = apiPath.replace(/\//g, "").replace("{", "_").replace("}", "");
+    p = p.charAt(0).toUpperCase() + p.slice(1);
     data = {
-      path: apiPath.replace(/\//g, "").replace("{", "_").replace("}", ""),
+      path: p,
       schemas: result
     };
 
