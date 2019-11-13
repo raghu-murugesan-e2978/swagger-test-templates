@@ -269,8 +269,9 @@ function testGenSchemaDefinition(swagger, apiPath, operation, response, response
     var result = [];
     var templateFn;
     var source;
+    var schema = "" + JSON.stringify(swagger['paths'][apiPath][operation]['responses'][responseCode]['schema']);
     var data = {
-      schema: JSON.stringify(swagger['paths'][apiPath][operation]['responses'][responseCode]['schema'], null, 2),
+      schema: schema.replace(/'/g, "\\'"),
       responseCode: responseCode,
       operation: operation
     };
@@ -1167,6 +1168,10 @@ function testGenPath(swagger, apiPath, config) {
   var output = '';
   var customFormats = fs.readFileSync(require.resolve('./custom-formats'), 'utf-8');
 
+      // get the data
+    var p = apiPath.replace(/\//g, "").replace("{", "_").replace("}", "");
+    p = p.charAt(0).toUpperCase() + p.slice(1);
+
   var data = {
     description: apiPath,
     assertion: config.assertionFormat,
@@ -1179,7 +1184,7 @@ function testGenPath(swagger, apiPath, config) {
     importEnv: info.importEnv,
     importArete: info.importArete,
     schemaFile : apiPath.replace(/\//g, '-').substring(1),
-    schemaClass : apiPath.replace(/\//g, '-').substring(1).replace("{", "").replace("}", "").replace("-", "_")
+    schemaClass : p
   };
 
   if (!allDeprecated) {
