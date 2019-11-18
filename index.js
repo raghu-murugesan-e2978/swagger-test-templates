@@ -269,9 +269,8 @@ function testGenSchemaDefinition(swagger, apiPath, operation, response, response
     var result = [];
     var templateFn;
     var source;
-    var schema = "" + JSON.stringify(swagger['paths'][apiPath][operation]['responses'][responseCode]['schema']);
     var data = {
-      schema: schema.replace(/'/g, "\\'"),
+      schema: JSON.stringify(swagger['paths'][apiPath][operation]['responses'][responseCode]['schema'], null, 2),
       responseCode: responseCode,
       operation: operation
     };

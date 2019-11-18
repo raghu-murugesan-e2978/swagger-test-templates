@@ -1,7 +1,6 @@
 
 
   def getSchema_{{operation}}_{{responseCode}}()
-    data = '{{schema}}'
-    schema = JSON.parse(data)
+    schema = {{schema}}
     return schema.to_json
   end
