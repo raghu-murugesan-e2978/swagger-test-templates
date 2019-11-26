@@ -248,7 +248,7 @@ function setPathParamsFromArray(data, config, idx) {
   return data;
 }
 
-function testGenSchemaDefinition(swagger, apiPath, operation, response, responseCode, config, info) {
+function testGenSchemaDefinition(swagger, apiPath, operation, response, responseCode, config) {
 
     var result = [];
     var templateFn;
@@ -269,7 +269,7 @@ function testGenSchemaDefinition(swagger, apiPath, operation, response, response
       return result;
 }
 
-function testGenSchemaClass(swagger, apiPath, config, info) {
+function testGenSchemaClass(swagger, apiPath, config) {
 
     var result = [];
     var templateFn;
@@ -284,7 +284,7 @@ function testGenSchemaClass(swagger, apiPath, config, info) {
     _.forEach(swagger.paths[apiPath], function(operations, operation){
          responses = swagger.paths[apiPath][operation].responses;
           _.forEach(responses, function(response, responseCode){
-            result = result.concat(testGenSchemaDefinition(swagger, apiPath, operation, response, responseCode, config, info));
+            result = result.concat(testGenSchemaDefinition(swagger, apiPath, operation, response, responseCode, config));
             //console.log(result);
           });
         });
@@ -667,7 +667,7 @@ function testGen(swagger, config) {
   // Schema builder for the tests under schema/schema_{{operations}}
 
     _.forEach(paths, function(paths, pathName) {
-        var schemaForTest = testGenSchemaClass(swagger, pathName, config, info) + "\n\n";
+        var schemaForTest = testGenSchemaClass(swagger, pathName, config) + "\n\n";
         //console.log(schemaForTest);
         output.push({
              name: '../schema/' + sanitize((pathName.replace(/\//g, '-').substring(1))) + '.' + config.lang,
@@ -696,7 +696,7 @@ function schemaGen(swagger, config) {
   // Schema builder for the tests under schema/schema_{{operations}}
 
   _.forEach(paths, function(paths, pathName) {
-      var schemaForTest = testGenSchemaClass(swagger, pathName, config, info) + "\n\n";
+      var schemaForTest = testGenSchemaClass(swagger, pathName, config) + "\n\n";
       //console.log(schemaForTest);
       output.push({
            name: '../schema/' + sanitize((pathName.replace(/\//g, '-').substring(1))) + '.' + config.lang,
