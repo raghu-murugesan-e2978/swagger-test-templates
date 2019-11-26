@@ -269,7 +269,7 @@ function testGenSchemaDefinition(swagger, apiPath, operation, response, response
       return result;
 }
 
-function testGenSchema(swagger, apiPath, config, info) {
+function testGenSchemaClass(swagger, apiPath, config, info) {
 
     var result = [];
     var templateFn;
@@ -667,7 +667,7 @@ function testGen(swagger, config) {
   // Schema builder for the tests under schema/schema_{{operations}}
 
     _.forEach(paths, function(paths, pathName) {
-        var schemaForTest = testGenSchema(swagger, pathName, config, info) + "\n\n";
+        var schemaForTest = testGenSchemaClass(swagger, pathName, config, info) + "\n\n";
         //console.log(schemaForTest);
         output.push({
              name: '../schema/' + sanitize((pathName.replace(/\//g, '-').substring(1))) + '.' + config.lang,
@@ -675,6 +675,35 @@ function testGen(swagger, config) {
         });
       });
       //console.log(output);
+  return output;
+}
+
+function schemaGen(swagger, config) {
+  var paths = swagger.paths;
+  var targets = config.pathName;
+  var result = [];
+  var output = [];
+  var i = 0;
+  var source;
+  var filename;
+  var schemaTemp;
+  var environment;
+  var ndx = 0;
+  var lang = config.lang;
+
+  config.templatesPath = (config.templatesPath) ? config.templatesPath : path.join(__dirname, 'templates', lang);
+  swagger = deref(swagger);
+  // Schema builder for the tests under schema/schema_{{operations}}
+
+  _.forEach(paths, function(paths, pathName) {
+      var schemaForTest = testGenSchemaClass(swagger, pathName, config, info) + "\n\n";
+      //console.log(schemaForTest);
+      output.push({
+           name: '../schema/' + sanitize((pathName.replace(/\//g, '-').substring(1))) + '.' + config.lang,
+           test: schemaForTest
+      });
+    });
+
   return output;
 }
 
@@ -691,5 +720,6 @@ handlebars.registerHelper('isPdfMediaType', helpers.isPdfMediaType);
 
 
 module.exports = {
-  testGen: testGen
+  testGen: testGen,
+  schemaGen: schemaGen
 };
