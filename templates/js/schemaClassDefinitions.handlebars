@@ -1,0 +1,13 @@
+/* eslint-disable no-tabs */
+
+'use strict'
+
+{{#each schemas}}
+    {{this}}
+{{/each}}
+
+module.exports = {
+	{{#each schemaExports}}
+      {{this}} {{#unless @last}},{{/unless}}
+  {{/each}}
+};

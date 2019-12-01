@@ -269,9 +269,31 @@ function testGenSchemaDefinition(swagger, apiPath, operation, response, response
       return result;
 }
 
+function testSchemaModuleExport(swagger, apiPath, operation, response, responseCode, config) {
+
+  var result = [];
+  var templateFn;
+  var source;
+  var data = {
+    responseCode: responseCode,
+    operation: operation
+  };
+
+  // compile template source and return schema string
+  var templatePath = path.join(config.templatesPath, 'schemaExport.handlebars');
+
+  source = fs.readFileSync(templatePath, 'utf8');
+  var schemaFn = handlebars.compile(source, {noEscape: true});
+  result = schemaFn(data);
+
+  return result;
+
+}
+
 function testGenSchemaClass(swagger, apiPath, config) {
 
     var result = [];
+    var exportResult = [];
     var templateFn;
     var source;
     var data;
@@ -285,6 +307,9 @@ function testGenSchemaClass(swagger, apiPath, config) {
          responses = swagger.paths[apiPath][operation].responses;
           _.forEach(responses, function(response, responseCode){
             result = result.concat(testGenSchemaDefinition(swagger, apiPath, operation, response, responseCode, config));
+            if (config.lang == 'js') {
+              exportResult = exportResult.concat(testSchemaModuleExport(swagger, apiPath, operation, response, responseCode, config));
+            }
             //console.log(result);
           });
         });
@@ -293,7 +318,8 @@ function testGenSchemaClass(swagger, apiPath, config) {
     p = p.charAt(0).toUpperCase() + p.slice(1);
     data = {
       path: p,
-      schemas: result
+      schemas: result,
+      schemaExports: exportResult
     };
 
       result = schemaFn(data);
