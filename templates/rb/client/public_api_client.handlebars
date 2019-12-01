@@ -1,0 +1,41 @@
+class PublicAPIClient
+  private_class_method :new
+
+  # to initialize Public HTTP
+  # parameters
+  # => opts:: Hash - base_url is mandatory
+  def initialize(opts)
+    @api = Clients::HTTPartyClient.new(opts[:base_url])
+    @auth = get_authorization(opts)
+  end
+
+  # to get authorization based on username/password/api_key
+  # parameters
+  # => opts:: Hash
+  def get_authorization(opts)
+    if ((opts.has_key? :username) && (opts.has_key? :password))
+      return @api.get_authorization('basic_auth', {username: opts[:username], password: opts[:password]})
+    elsif opts.has_key? :api_key
+      return @api.get_authorization('bearer_token', {api_key: opts[:api_key]})
+    else
+      return nil # no authorization
+    end
+  end
+
+  # to get headers for HTTP method
+  # parameters
+  # => type:: header type
+  def get_headers(type = 'application/json',opts = {})
+    header = Hash.new
+    (header['Authorization'] = @auth) if @auth
+    case type.strip
+    when 'application/json'
+      header['Content-Type'] = 'application/json'
+    when 'multipart/form-data'
+      header['Content-Type'] = 'multipart/form-data'
+    end
+    opts.each {|key, value| header[key] = value} unless opts.empty?
+    header
+  end
+
+end
