@@ -3,11 +3,11 @@
 'use strict'
 
 {{#each schemas}}
-    {{this}}
+{{this}}
 {{/each}}
 
 module.exports = {
-	{{#each schemaExports}}
-      {{this}} {{#unless @last}},{{/unless}}
-  {{/each}}
+{{#each schemaExports}}
+{{this}}{{#unless @last}},{{/unless}}
+{{/each}}
 };
