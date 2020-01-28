@@ -82,7 +82,8 @@ function getData(swagger, apiPath, operation, response, config, info) {
     requests: 0,
     concurrent: 0,
     pathParams: {},
-    operation: operation
+    operation: operation,
+    operationId: grandProperty['operationId']
   };
 
   // get pathParams from config
@@ -285,7 +286,6 @@ function testGenSchemaClass(swagger, apiPath, config) {
          responses = swagger.paths[apiPath][operation].responses;
           _.forEach(responses, function(response, responseCode){
             result = result.concat(testGenSchemaDefinition(swagger, apiPath, operation, response, responseCode, config));
-            //console.log(result);
           });
         });
       // get the data
@@ -297,7 +297,58 @@ function testGenSchemaClass(swagger, apiPath, config) {
     };
 
       result = schemaFn(data);
-//console.log(result);
+      return result;
+}
+
+function clientDefinitionGen(swagger, apiPath, operation, config) {
+
+    var result = [];
+    var templateFn;
+    var source;
+    var info = {
+        importValidator: false,
+        importEnv: false,
+        importArete: false,
+        consumes: [],
+        produces: [],
+        security: [],
+        loadTest: null
+      };
+    var data = getData(swagger, apiPath, operation, '200', config, info);
+
+    // compile template source and return test string
+    var templatePath = path.join(config.templatesPath, 'client/client_classes/client.handlebars');
+
+    source = fs.readFileSync(templatePath, 'utf8');
+    var schemaFn = handlebars.compile(source, {noEscape: true});
+    result = schemaFn(data);
+
+    return result;
+}
+
+function clientClassGen(swagger, apiPath, config) {
+
+    var result = [];
+    var templateFn;
+    var source;
+    var data;
+    var schemaFn;
+
+
+    source = fs.readFileSync(path.join(config.templatesPath, 'client/client_classes/clientClassDefinitions.handlebars'), 'utf8');
+    schemaFn = handlebars.compile(source, {noEscape: true});
+    _.forEach(swagger.paths[apiPath], function(operations, operation){
+            result = result.concat(clientDefinitionGen(swagger, apiPath, operation, config));
+        });
+      // get the data
+    var p = apiPath.replace(/\//g, "").replace("{", "_").replace("}", "");
+    p = p.charAt(0).toUpperCase() + p.slice(1);
+    data = {
+      clientClass: p + 'Api',
+      methods: result
+    };
+
+      result = schemaFn(data);
       return result;
 }
 
@@ -749,6 +800,34 @@ function schemaGen(swagger, config) {
   return output;
 }
 
+function clientGen(swagger, config) {
+  var paths = swagger.paths;
+  var targets = config.pathName;
+  var result = [];
+  var output = [];
+  var i = 0;
+  var source;
+  var filename;
+  var schemaTemp;
+  var environment;
+  var ndx = 0;
+  var lang = config.lang;
+
+  config.templatesPath = (config.templatesPath) ? config.templatesPath : path.join(__dirname, 'templates', lang);
+  swagger = deref(swagger);
+  // Schema builder for the tests under schema/schema_{{operations}}
+
+  _.forEach(paths, function(paths, pathName) {
+      var schemaForTest = clientClassGen(swagger, pathName, config) + "\n\n";
+      output.push({
+           name: '../public_api/' + sanitize((pathName.replace(/\//g, '-').substring(1))) + '.' + config.lang,
+           test: schemaForTest
+      });
+    });
+
+  return output;
+}
+
 function libClientGen(config) {
 
   var output = [];
@@ -812,5 +891,6 @@ module.exports = {
   schemaGen: schemaGen,
   libClientGen: libClientGen,
   pubClientGen : pubClientGen,
-  privateClientGen: privateClientGen
+  privateClientGen: privateClientGen,
+  clientGen: clientGen
 };

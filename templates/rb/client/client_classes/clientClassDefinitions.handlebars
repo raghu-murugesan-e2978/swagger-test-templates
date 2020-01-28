@@ -1,0 +1,14 @@
+module Public
+  class {{clientClass}} < PublicAPIClient
+    public_class_method :new
+
+    def initialize(params)
+      super(params)
+    end
+
+    {{#each methods}}
+        {{this}}
+    {{/each}}
+
+  end
+end
