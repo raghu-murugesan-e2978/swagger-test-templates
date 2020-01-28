@@ -480,7 +480,8 @@ function testGenOperation(swagger, apiPath, operation, config, info) {
 
   var output;
   var data = {
-    description: operation,
+    operation: operation,
+    path: apiPath,
     tests: result
   };
 
