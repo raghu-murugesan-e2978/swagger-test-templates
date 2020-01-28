@@ -315,6 +315,20 @@ function libClientGenerator(config) {
     return result;
 }
 
+function pubClientGenerator(config) {
+
+    var result = [];
+    var source;
+    var schemaFn;
+    var data = {};
+
+
+    source = fs.readFileSync(path.join(config.templatesPath, 'client/public_api_client.handlebars'), 'utf8');
+    schemaFn = handlebars.compile(source, {noEscape: true});
+    result = schemaFn(data);
+    return result;
+}
+
 /**
 * Filter out optional query parameters with no value provided in request data
 * @private
@@ -712,7 +726,6 @@ function schemaGen(swagger, config) {
 
   _.forEach(paths, function(paths, pathName) {
       var schemaForTest = testGenSchemaClass(swagger, pathName, config) + "\n\n";
-      //console.log(schemaForTest);
       output.push({
            name: '../schema/' + sanitize((pathName.replace(/\//g, '-').substring(1))) + '.' + config.lang,
            test: schemaForTest
@@ -737,6 +750,21 @@ function libClientGen(config) {
   return output;
 }
 
+function pubClientGen(config) {
+
+  var output = [];
+  var libClientTemp;
+  var lang = config.lang;
+
+  config.templatesPath = (config.templatesPath) ? config.templatesPath : path.join(__dirname, 'templates', lang);
+  output.push({
+       name: '../public_api/public_api_client.rb',
+       test: pubClientGenerator(config)
+  });
+
+  return output;
+}
+
 handlebars.registerHelper('is', helpers.is);
 handlebars.registerHelper('ifCond', helpers.ifCond);
 handlebars.registerHelper('validateResponse', helpers.validateResponse);
@@ -752,5 +780,6 @@ handlebars.registerHelper('isPdfMediaType', helpers.isPdfMediaType);
 module.exports = {
   testGen: testGen,
   schemaGen: schemaGen,
-  libClientGen: libClientGen
+  libClientGen: libClientGen,
+  pubClientGen : pubClientGen
 };
