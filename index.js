@@ -301,6 +301,20 @@ function testGenSchemaClass(swagger, apiPath, config) {
       return result;
 }
 
+function libClientGenerator(config) {
+
+    var result = [];
+    var source;
+    var schemaFn;
+    var data = {};
+
+
+    source = fs.readFileSync(path.join(config.templatesPath, 'client/httparty_client.handlebars'), 'utf8');
+    schemaFn = handlebars.compile(source, {noEscape: true});
+    result = schemaFn(data);
+    return result;
+}
+
 /**
 * Filter out optional query parameters with no value provided in request data
 * @private
@@ -708,6 +722,21 @@ function schemaGen(swagger, config) {
   return output;
 }
 
+function libClientGen(config) {
+
+  var output = [];
+  var libClientTemp;
+  var lang = config.lang;
+
+  config.templatesPath = (config.templatesPath) ? config.templatesPath : path.join(__dirname, 'templates', lang);
+  output.push({
+       name: '../public_api/utilities/httparty_client.rb',
+       test: libClientGenerator(config)
+  });
+
+  return output;
+}
+
 handlebars.registerHelper('is', helpers.is);
 handlebars.registerHelper('ifCond', helpers.ifCond);
 handlebars.registerHelper('validateResponse', helpers.validateResponse);
@@ -722,5 +751,6 @@ handlebars.registerHelper('isPdfMediaType', helpers.isPdfMediaType);
 
 module.exports = {
   testGen: testGen,
-  schemaGen: schemaGen
+  schemaGen: schemaGen,
+  libClientGen: libClientGen
 };
