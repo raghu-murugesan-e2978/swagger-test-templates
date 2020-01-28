@@ -329,6 +329,20 @@ function pubClientGenerator(config) {
     return result;
 }
 
+function privateClientGenerator(config) {
+
+    var result = [];
+    var source;
+    var schemaFn;
+    var data = {};
+
+
+    source = fs.readFileSync(path.join(config.templatesPath, 'client/private_api_client.handlebars'), 'utf8');
+    schemaFn = handlebars.compile(source, {noEscape: true});
+    result = schemaFn(data);
+    return result;
+}
+
 /**
 * Filter out optional query parameters with no value provided in request data
 * @private
@@ -765,6 +779,22 @@ function pubClientGen(config) {
   return output;
 }
 
+function privateClientGen(config) {
+
+  var output = [];
+  var libClientTemp;
+  var lang = config.lang;
+
+  config.templatesPath = (config.templatesPath) ? config.templatesPath : path.join(__dirname, 'templates', lang);
+  output.push({
+       name: '../private_api/api.rb',
+       test: privateClientGenerator(config)
+  });
+
+  return output;
+}
+
+
 handlebars.registerHelper('is', helpers.is);
 handlebars.registerHelper('ifCond', helpers.ifCond);
 handlebars.registerHelper('validateResponse', helpers.validateResponse);
@@ -781,5 +811,6 @@ module.exports = {
   testGen: testGen,
   schemaGen: schemaGen,
   libClientGen: libClientGen,
-  pubClientGen : pubClientGen
+  pubClientGen : pubClientGen,
+  privateClientGen: privateClientGen
 };
