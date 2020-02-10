@@ -822,7 +822,7 @@ function libClientGen(config) {
 
   config.templatesPath = (config.templatesPath) ? config.templatesPath : path.join(__dirname, 'templates', lang);
   output.push({
-       name: '../public_api/utilities/httparty_client.rb',
+       name: '../utilities/httparty_client.rb',
        test: libClientGenerator(config)
   });
 
