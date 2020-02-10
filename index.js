@@ -374,7 +374,7 @@ function pubClientGenerator(config) {
     var data = {};
 
 
-    source = fs.readFileSync(path.join(config.templatesPath, 'client/public_api_client.handlebars'), 'utf8');
+    source = fs.readFileSync(path.join(config.templatesPath, 'client/api_client.handlebars'), 'utf8');
     schemaFn = handlebars.compile(source, {noEscape: true});
     result = schemaFn(data);
     return result;
@@ -806,7 +806,7 @@ function clientGen(swagger, config) {
   _.forEach(paths, function(paths, pathName) {
       var schemaForTest = clientClassGen(swagger, pathName, config) + "\n\n";
       output.push({
-           name: '../public_api/' + sanitize((pathName.replace(/\//g, '-').substring(1))) + '.' + config.lang,
+           name: sanitize((pathName.replace(/\//g, '-').substring(1))) + '.' + config.lang,
            test: schemaForTest
       });
     });
@@ -822,7 +822,7 @@ function libClientGen(config) {
 
   config.templatesPath = (config.templatesPath) ? config.templatesPath : path.join(__dirname, 'templates', lang);
   output.push({
-       name: '../utilities/httparty_client.rb',
+       name: 'httparty_client.rb',
        test: libClientGenerator(config)
   });
 
@@ -837,7 +837,7 @@ function pubClientGen(config) {
 
   config.templatesPath = (config.templatesPath) ? config.templatesPath : path.join(__dirname, 'templates', lang);
   output.push({
-       name: '../utilities/api_client.rb',
+       name: 'api_client.rb',
        test: pubClientGenerator(config)
   });
 
