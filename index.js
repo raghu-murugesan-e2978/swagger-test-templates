@@ -837,7 +837,7 @@ function pubClientGen(config) {
 
   config.templatesPath = (config.templatesPath) ? config.templatesPath : path.join(__dirname, 'templates', lang);
   output.push({
-       name: '../public_api/public_api_client.rb',
+       name: '../utilities/api_client.rb',
        test: pubClientGenerator(config)
   });
 
