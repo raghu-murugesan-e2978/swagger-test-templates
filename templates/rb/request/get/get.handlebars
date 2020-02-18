@@ -1,16 +1,8 @@
   shared_examples 'Validate {{operation}} {{path}}' do |test_id|
     it 'should respond with {{length description}}',:test_id => ["#{test_id}"] do |e|
       e.step "Verify {{responseCode}}" do
-        response = RestClient.get(
-          URI.join($ENDPOINT, '{{pathify path pathParams}}').to_s,
-          {
-            'Content-Type': '{{contentType}}'{{#if headerParameters}},
-            {{#each headerParameters}}'{{this.name}}': {{requestDataParamFormatter this.name 'string' ../requestParameters}}{{#unless @last}},
-            {{/unless}}{{/each}}{{/if}}{{#if headerApiKey}},
-            {{headerApiKey.type}}: process.env.{{headerApiKey.name}}{{/if}}{{#if headerSecurity}},
-            Authorization: '{{headerSecurity.type}} ' + process.env.{{headerSecurity.name}}{{/if}}
-          }
-        )
+        body = @test_data
+        response = Public::{{clientClass}}.new().{{opreationId}}(body)
         parsed_response = JSON.parse(response.body)
           {{#is assertion 'expect'}}
           {{#if default}}
@@ -36,7 +28,8 @@
 
           {{#validateResponse returnType noSchema}}
           {{#is assertion 'expect'}}
-          expect(JSON::Validator.validate(schema_object.getSchema_{{operation}}_{{responseCode}}(), parsed_response)).to eq(true)
+          @schema_comparison_result = JSON::Validator.fully_validate(schema_object.getSchema_{{operation}}_{{responseCode}}(), parsed_response))
+          expect(@validation_result).to eql(@empty_array),@validation_result
           {{/is}}
           {{#is assertion 'should'}}
           validator.validate(body, schema).should.be.true
@@ -132,3 +125,5 @@
         });
       });
   {{/if}}
+
+  include_examples 'Validate {{operation}} {{path}}', 1

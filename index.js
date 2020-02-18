@@ -62,6 +62,8 @@ function getData(swagger, apiPath, operation, response, config, info) {
 
   var responseDescription = (swagger.paths[apiPath][operation].responses[response]) ?
     swagger.paths[apiPath][operation].responses[response].description : '';
+  var client_class = apiPath.replace(/\//g, "").replace("{", "_").replace("}", "");
+  client_class = client_class.charAt(0).toUpperCase() + p.slice(1);
   var data = { // request payload
     responseCode: response,
     default: response === 'default' ? 'default' : null,
@@ -83,7 +85,8 @@ function getData(swagger, apiPath, operation, response, config, info) {
     concurrent: 0,
     pathParams: {},
     operation: operation,
-    operationId: grandProperty['operationId']
+    operationId: grandProperty['operationId'],
+    clientClass: client_class
   };
 
   // get pathParams from config
