@@ -63,7 +63,7 @@ function getData(swagger, apiPath, operation, response, config, info) {
   var responseDescription = (swagger.paths[apiPath][operation].responses[response]) ?
     swagger.paths[apiPath][operation].responses[response].description : '';
   var client_class = apiPath.replace(/\//g, "").replace("{", "_").replace("}", "");
-  client_class = client_class.charAt(0).toUpperCase() + p.slice(1);
+  client_class = client_class.charAt(0).toUpperCase() + client_class.slice(1);
   var data = { // request payload
     responseCode: response,
     default: response === 'default' ? 'default' : null,
