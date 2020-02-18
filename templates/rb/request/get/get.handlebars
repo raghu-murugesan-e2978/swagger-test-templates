@@ -2,7 +2,7 @@
     it 'should respond with {{length description}}',:test_id => ["#{test_id}"] do |e|
       e.step "Verify {{responseCode}}" do
         body = @test_data
-        response = Public::{{clientClass}}.new().{{operationId}}(body)
+        response = @client_object.{{operationId}}(body)
         parsed_response = JSON.parse(response.body)
           {{#is assertion 'expect'}}
           {{#if default}}
@@ -29,7 +29,7 @@
           {{#validateResponse returnType noSchema}}
           {{#is assertion 'expect'}}
           @schema_comparison_result = JSON::Validator.fully_validate(schema_object.getSchema_{{operation}}_{{responseCode}}(), parsed_response))
-          expect(@validation_result).to eql(@empty_array),@validation_result
+          expect(@schema_comparison_result).to eql(@empty_array),@schema_comparison_result
           {{/is}}
           {{#is assertion 'should'}}
           validator.validate(body, schema).should.be.true

@@ -62,8 +62,6 @@ function getData(swagger, apiPath, operation, response, config, info) {
 
   var responseDescription = (swagger.paths[apiPath][operation].responses[response]) ?
     swagger.paths[apiPath][operation].responses[response].description : '';
-  var client_class = apiPath.replace(/\//g, "").replace("{", "_").replace("}", "");
-  client_class = client_class.charAt(0).toUpperCase() + client_class.slice(1);
   var data = { // request payload
     responseCode: response,
     default: response === 'default' ? 'default' : null,
@@ -85,8 +83,7 @@ function getData(swagger, apiPath, operation, response, config, info) {
     concurrent: 0,
     pathParams: {},
     operation: operation,
-    operationId: grandProperty['operationId'],
-    clientClass: client_class
+    operationId: grandProperty['operationId']
   };
 
   // get pathParams from config
@@ -597,6 +594,8 @@ function testGenPath(swagger, apiPath, config) {
     security: [],
     loadTest: null
   };
+  var client_class = apiPath.replace(/\//g, "").replace("{", "_").replace("}", "");
+  client_class = client_class.charAt(0).toUpperCase() + client_class.slice(1);
 
   if (config.loadTest) {
     info.loadTest = config.loadTest;
@@ -631,7 +630,8 @@ function testGenPath(swagger, apiPath, config) {
     importEnv: info.importEnv,
     importArete: info.importArete,
     schemaFile : apiPath.replace(/\//g, '-').substring(1),
-    schemaClass : p
+    schemaClass : p,
+    clientClass : p + 'Api'
   };
 
   if (!allDeprecated) {
