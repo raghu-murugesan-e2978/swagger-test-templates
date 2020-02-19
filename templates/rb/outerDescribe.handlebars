@@ -2,12 +2,16 @@
 require 'json-schema'
 require 'httparty'
 require 'safe_yaml'
-require "#{Pathname.pwd}/api/spec/schema/{{schemaFile}}.rb"
+require "#{Pathname.pwd}/api/spec/api/schema/{{schemaFile}}.rb"
 
 describe '{{description}}' do
     before(:all) do
+      @authorization_headers = {
+        @base_url = "",
+        @auth_token = ""
+      }
       @schema_object = {{schemaClass}}.new
-      @client_object = Public::{{schemaClass}}.new
+      @client_object = Public::{{clientClass}}.new(@authorization_headers)
       @test_data = {}
     end
 {{#each tests}}
