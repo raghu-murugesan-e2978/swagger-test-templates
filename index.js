@@ -380,6 +380,48 @@ function pubClientGenerator(config) {
     return result;
 }
 
+function gemSpecGenerator(config) {
+
+    var result = [];
+    var source;
+    var schemaFn;
+    var data = {};
+
+
+    source = fs.readFileSync(path.join(config.templatesPath, 'gemfile.handlebars'), 'utf8');
+    schemaFn = handlebars.compile(source, {noEscape: true});
+    result = schemaFn(data);
+    return result;
+}
+
+function specHelperGenerator(config) {
+
+    var result = [];
+    var source;
+    var schemaFn;
+    var data = {};
+
+
+    source = fs.readFileSync(path.join(config.templatesPath, 'client/spec_helper.handlebars'), 'utf8');
+    schemaFn = handlebars.compile(source, {noEscape: true});
+    result = schemaFn(data);
+    return result;
+}
+
+function stagingYAMLGenerator(config) {
+
+    var result = [];
+    var source;
+    var schemaFn;
+    var data = {};
+
+
+    source = fs.readFileSync(path.join(config.templatesPath, 'client/staging_yaml.handlebars'), 'utf8');
+    schemaFn = handlebars.compile(source, {noEscape: true});
+    result = schemaFn(data);
+    return result;
+}
+
 /**
 * Filter out optional query parameters with no value provided in request data
 * @private
@@ -841,6 +883,18 @@ function pubClientGen(config) {
        name: 'api_client.rb',
        test: pubClientGenerator(config)
   });
+  output.push({
+       name: '../../Gemfile',
+       test: gemSpecGenerator(config)
+  });
+  output.push({
+       name: '../spec/spec_helper.rb',
+       test: specHelperGenerator(config)
+  });
+  output.push({
+         name: '../staging.yml',
+         test: stagingYAMLGenerator(config)
+    });
 
   return output;
 }
