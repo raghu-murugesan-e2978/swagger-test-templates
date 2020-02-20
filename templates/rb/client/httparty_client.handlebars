@@ -50,7 +50,6 @@ module Clients
     # => headers:: optional
     # => query:: optional
     def get(end_point:, query: Hash.new, headers:)
-      start_time = Time.now
       end_point = (end_point.start_with? 'http') ? end_point : (@base_url.chomp('/') + end_point)
       self.class.get(end_point, query: query, headers: headers)
     end
@@ -62,7 +61,6 @@ module Clients
     # => query:: optional
     # => headers:: optional
     def post(end_point:, body: Hash.new, query: Hash.new, headers:)
-      start_time = Time.now
       end_point = (end_point.start_with? 'http') ? end_point : (@base_url.chomp('/') + end_point)
       self.class.post(end_point, body: body, query: query, headers: headers)
     end
@@ -74,7 +72,6 @@ module Clients
     # => query:: optional
     # => headers:: optional
     def put(end_point:, body: Hash.new, query: Hash.new, headers:)
-      start_time = Time.now
       end_point = (end_point.start_with? 'http') ? end_point : (@base_url.chomp('/') + end_point)
       self.class.put(end_point, body: body, query: query, headers: headers)
     end
@@ -86,7 +83,6 @@ module Clients
     # => query:: optional
     # => headers:: optional
     def delete(end_point:, body: Hash.new, query: Hash.new, headers:)
-      start_time = Time.now
       end_point = (end_point.start_with? 'http') ? end_point : (@base_url.chomp('/') + end_point)
       self.class.delete(end_point, body: body, query: query, headers: headers)
     end
