@@ -632,7 +632,7 @@ function testGenPath(swagger, apiPath, config) {
     schemaFile : apiPath.replace(/\//g, "").replace("{", "_").replace("}", ""),
     schemaClass : p,
     clientClass : p + 'Api',
-    clientFile: p.charAt(0).toLowerCase() + p.slice(1) + 'Api'
+    clientFile: p.charAt(0).toLowerCase() + p.slice(1)
   };
 
   if (!allDeprecated) {
