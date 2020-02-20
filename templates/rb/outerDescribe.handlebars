@@ -7,9 +7,10 @@ require "#{Pathname.pwd}/api/public_api/{{clientFile}}.rb"
 
 describe '{{description}}' do
     before(:all) do
+      $conf = YAML.load_file(Dir.pwd + "/api/staging.yml") unless $conf
       @authorization_headers = {
-        @base_url = "",
-        @auth_token = ""
+        @base_url => $conf["base_urls"],
+        @auth_token => $conf["api_key"]
       }
       @schema_object = {{schemaClass}}.new
       @client_object = Public::{{clientClass}}.new(@authorization_headers)
