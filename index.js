@@ -629,7 +629,7 @@ function testGenPath(swagger, apiPath, config) {
     importValidator: info.importValidator,
     importEnv: info.importEnv,
     importArete: info.importArete,
-    schemaFile : apiPath.replace(/\//g, "").replace("{", "_").replace("}", "").substring(1),
+    schemaFile : apiPath.replace(/\//g, "").replace("{", "_").replace("}", ""),
     schemaClass : p,
     clientClass : p + 'Api'
   };
