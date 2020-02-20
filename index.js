@@ -697,7 +697,7 @@ function testGen(swagger, config) {
     _.forEach(paths, function(apipath, pathName) {
       // for output file name, replace / with -, and truncate the first /
       // eg: /hello/world -> hello-world
-      filename = sanitize((pathName.replace(/\//g, '-').substring(1))
+      filename = sanitize((pathName.replace(/\//g, '_').replace('{', '').substring(1))) + '.' + config.lang
         + output[i].name);
       // for base path file name, change it to base-path
       if (pathName === '/') {
@@ -752,7 +752,7 @@ function testGen(swagger, config) {
     _.forEach(paths, function(paths, pathName) {
         var schemaForTest = testGenSchemaClass(swagger, pathName, config) + "\n\n";
         output.push({
-             name: '../schema/' + sanitize((pathName.replace(/\//g, '-').substring(1))) + '.' + config.lang,
+             name: '../schema/' + sanitize((pathName.replace(/\//g, '_').replace('{', '').substring(1))) + '.' + config.lang,
              test: schemaForTest
         });
       });
@@ -779,7 +779,7 @@ function schemaGen(swagger, config) {
   _.forEach(paths, function(paths, pathName) {
       var schemaForTest = testGenSchemaClass(swagger, pathName, config) + "\n\n";
       output.push({
-           name: sanitize((pathName.replace(/\//g, '-').substring(1))) + '.' + config.lang,
+           name: sanitize((pathName.replace(/\//g, '_').replace('{', '').substring(1))) + '.' + config.lang,
            test: schemaForTest
       });
     });
@@ -807,7 +807,7 @@ function clientGen(swagger, config) {
   _.forEach(paths, function(paths, pathName) {
       var schemaForTest = clientClassGen(swagger, pathName, config) + "\n\n";
       output.push({
-           name: sanitize((pathName.replace(/\//g, '-').substring(1))) + '.' + config.lang,
+           name: sanitize((pathName.replace(/\//g, '_').replace('{', '').substring(1))) + '.' + config.lang,
            test: schemaForTest
       });
     });
