@@ -631,7 +631,8 @@ function testGenPath(swagger, apiPath, config) {
     importArete: info.importArete,
     schemaFile : apiPath.replace(/\//g, "").replace("{", "_").replace("}", ""),
     schemaClass : p,
-    clientClass : p + 'Api'
+    clientClass : p + 'Api',
+    clientFile: p.charAt(0).toLowerCase() + p.slice(1) + 'Api'
   };
 
   if (!allDeprecated) {

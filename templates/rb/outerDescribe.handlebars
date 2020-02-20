@@ -3,7 +3,7 @@ require 'json-schema'
 require 'httparty'
 require 'safe_yaml'
 require "#{Pathname.pwd}/api/spec/api/schema/{{schemaFile}}.rb"
-require "#{Pathname.pwd}/api/public_api/{{clientClass}}.rb"
+require "#{Pathname.pwd}/api/public_api/{{clientFile}}.rb"
 
 describe '{{description}}' do
     before(:all) do
