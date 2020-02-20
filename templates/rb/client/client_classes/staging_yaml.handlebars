@@ -1,0 +1,88 @@
+#extends: '../configs/default_configs.yml'
+browser: chrome
+
+#mode: parallel
+#remote: false
+#hub_url: http://192.168.62.99:4444/wd/hub
+#
+#reports:
+#  html: reports/html_report.html
+#  RspecJunitFormatter: reports/junit_report.xml
+#  doc: console
+#
+#screenshot_location: reports/screenshots
+#
+#rspecOpts:
+#  color: true
+#
+#dimensions:
+#  horizontal: 1366
+#  vertical: 768
+#
+#implicit_wait: 20
+#
+#switches:
+#  - --headless
+#  - --disable-infobars
+#  - --disable-gpu
+#  - --disable-dev-shm-usage
+#  - --no-sandbox
+#  - --screen-size=1200x800
+#prefs:
+#  credentials_enable_service: false
+#  profile:
+#    password_manager_enabled: false
+#  download:
+#    default_directory: downloads/
+#
+#tcm: freshrelease
+#agile: freshrelease
+#
+#freshrelease:
+#  enabled: true
+#  token: NoXPHeYHeTIPbAUcOstWaQ #fdautomation1@freshworks.com
+#  url: https://freshworks.freshrelease.com/
+#  run_path: /tcm/test-runs/
+#  project_id: FT
+#  release_tag: FT_Automation
+#  sanity_run_id: 18639
+#  regression_run_id: 18640
+#
+#credentials: 'credentials.yml'
+#
+#prepare_account:
+#  setup: true
+#  cleanup: true
+#
+#api_log: false
+
+
+
+
+type: api
+
+mode: parallel
+
+specs:
+  - api/spec
+
+reports:
+    html: reports/html_report.html
+    RspecJunitFormatter: reports/junit_report.xml
+    doc: console
+    allure_spec: "api"
+
+implicit_wait: 20
+
+rspecOpts:
+    color: true
+
+base_urls: https://sharmilaperumal012.freshtimeoff.com
+api_key: bGUCma__dHKcCB3AyH1rsA
+
+signup_urls:
+  - http://website.freshhr.com
+
+prepare_account:
+  setup: false
+  cleanup: false
