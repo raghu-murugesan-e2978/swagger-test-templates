@@ -697,8 +697,7 @@ function testGen(swagger, config) {
     _.forEach(paths, function(apipath, pathName) {
       // for output file name, replace / with -, and truncate the first /
       // eg: /hello/world -> hello-world
-      filename = sanitize((pathName.replace(/\//g, '_').replace('{', '').substring(1))) + '.' + config.lang
-        + output[i].name);
+      filename = sanitize((pathName.replace(/\//g, '_').replace('{', '').substring(1))) + '.' + config.lang + output[i].name);
       // for base path file name, change it to base-path
       if (pathName === '/') {
         filename = 'base-path' + output[i].name;
