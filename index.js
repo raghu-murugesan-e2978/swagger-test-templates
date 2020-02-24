@@ -62,6 +62,7 @@ function getData(swagger, apiPath, operation, response, config, info) {
 
   var responseDescription = (swagger.paths[apiPath][operation].responses[response]) ?
     swagger.paths[apiPath][operation].responses[response].description : '';
+
   var data = { // request payload
     responseCode: response,
     default: response === 'default' ? 'default' : null,
@@ -798,6 +799,18 @@ function testGen(swagger, config) {
              test: schemaForTest
         });
       });
+    output.push({
+         name: '../../../../Gemfile',
+         test: gemSpecGenerator(config)
+    });
+    output.push({
+         name: '../../spec_helper.rb',
+         test: specHelperGenerator(config)
+    });
+    output.push({
+           name: '../../../staging.yml',
+           test: stagingYAMLGenerator(config)
+      });
   return output;
 }
 
@@ -883,18 +896,6 @@ function pubClientGen(config) {
        name: 'api_client.rb',
        test: pubClientGenerator(config)
   });
-  output.push({
-       name: '../../Gemfile',
-       test: gemSpecGenerator(config)
-  });
-  output.push({
-       name: '../spec/spec_helper.rb',
-       test: specHelperGenerator(config)
-  });
-  output.push({
-         name: '../staging.yml',
-         test: stagingYAMLGenerator(config)
-    });
 
   return output;
 }
