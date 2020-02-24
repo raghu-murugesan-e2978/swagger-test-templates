@@ -191,6 +191,12 @@ function getData(swagger, apiPath, operation, response, config, info) {
     data.schema = JSON.stringify(data.schema, null, 2);
   }
 
+  if(data.noSchema) {
+    data.noSchema = false;
+    data.schema = {};
+    data.schema = JSON.stringify(data.schema, null, 2);
+  }
+
   // request url case
   if (config.testModule === 'request') {
     data.path = url.format({
@@ -256,7 +262,7 @@ function testGenSchemaDefinition(swagger, apiPath, operation, response, response
     var templateFn;
     var source;
     var data = {
-      schema: JSON.stringify(swagger['paths'][apiPath][operation]['responses'][responseCode]['schema'], null, 2),
+      schema: JSON.stringify(swagger['paths'][apiPath][operation]['responses'][responseCode]['schema'], null, 2) == null ? "{}" : JSON.stringify(swagger['paths'][apiPath][operation]['responses'][responseCode]['schema'], null, 2),
       responseCode: responseCode,
       operation: operation
     };
