@@ -322,7 +322,9 @@ function clientDefinitionGen(swagger, apiPath, operation, config) {
         loadTest: null
       };
     var data = getData(swagger, apiPath, operation, '200', config, info);
+    data.path = data.path.replace("{", "#{");
 
+    console.log(data.pathParams);
     // compile template source and return test string
     var templatePath = path.join(config.templatesPath, 'client/client_classes/client.handlebars');
 
