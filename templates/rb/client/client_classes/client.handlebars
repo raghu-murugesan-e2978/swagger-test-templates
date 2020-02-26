@@ -1,7 +1,7 @@
 
     # Method to {{operationId}}
     # @param [Object] includes : the parameter to have include values in query
-    def {{operationId}}({{#if pathParameters}}{{#each pathParameters}}{{this.name}},{{/each}}{{/if}}includes=nil,query=nil)
+    def {{operationId}}({{#if pathParameters}}{{#each pathParameters}}{{this.name}},{{/each}}{{/if}}{{#unless noSchema}}body,{{/unless}}includes=nil,query=nil)
       api_params = Hash.new
       api_params[:end_point] = "{{path}}"
       api_params[:query] = {:includes => "#{includes}"} unless includes.nil?
