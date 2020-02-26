@@ -1,7 +1,6 @@
-  shared_examples 'Validate {{operation}} {{path}} for {{responseCode}}' do |test_id|
-    it 'should respond with {{length description}}',:test_id => ["#{test_id}"] do |e|
-        body = @test_data
-        response = @client_object.{{operationId}}(body)
+  shared_examples 'Validate {{operation}} {{path}} for {{responseCode}}' do |{{#if pathParameters}}{{#each pathParameters}}{{this.name}}, {{/each}}{{/if}}test_id|
+    it 'should respond with {{length description}}',{{#if pathParameters}}{{#each pathParameters}}:{{this.name}} => ["#{{{this.name}}}"], {{/each}}{{/if}}:test_id => ["#{test_id}"] do |e|
+        response = @client_object.{{operationId}}({{#if pathParameters}}{{#each pathParameters}}{{this.name}}{{#unless @last}},{{/unless}}{{/each}}{{/if}})
         parsed_response = JSON.parse(response.body)
           {{#is assertion 'expect'}}
           {{#if default}}
@@ -124,4 +123,4 @@
       });
   {{/if}}
 
-  include_examples 'Validate {{operation}} {{path}} for {{responseCode}}', 1
+  include_examples 'Validate {{operation}} {{path}} for {{responseCode}}', 1, 1

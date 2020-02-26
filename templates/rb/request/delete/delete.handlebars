@@ -1,7 +1,6 @@
   shared_examples 'Validate {{operation}} {{path}} for {{responseCode}}' do |test_id|
     it 'should respond with {{length description}}',:test_id => ["#{test_id}"] do |e|
-        body = @test_data
-        response = @client_object.{{operationId}}(body)
+        response = @client_object.{{operationId}}()
         parsed_response = JSON.parse(response.body)
           {{#is assertion 'expect'}}
           {{#if default}}
