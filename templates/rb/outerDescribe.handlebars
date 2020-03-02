@@ -10,7 +10,7 @@ describe '{{description}}' do
       $conf = YAML.load_file(Dir.pwd + "/api/staging.yml") unless $conf
       @authorization_headers = {
         :base_url => $conf["base_urls"],
-        :auth_token => $conf["api_key"]
+        :api_key => $conf["api_key"]
       }
       @schema_object = {{schemaClass}}.new
       @client_object = Public::{{clientClass}}.new(@authorization_headers)
