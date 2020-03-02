@@ -26,7 +26,7 @@
 
           {{#validateResponse returnType noSchema}}
           {{#is assertion 'expect'}}
-          @schema_comparison_result = JSON::Validator.fully_validate(schema_object.get_schema_{{operation}}_{{responseCode}}(), parsed_response)
+          @schema_comparison_result = JSON::Validator.fully_validate(@schema_object.get_schema_{{operation}}_{{responseCode}}(), parsed_response)
           expect(@schema_comparison_result).to eql(@empty_array),@schema_comparison_result
           {{/is}}
           {{#is assertion 'should'}}
