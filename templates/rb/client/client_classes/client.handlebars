@@ -7,6 +7,6 @@
       api_params[:query] = {:includes => "#{includes}"} unless includes.nil?
       api_params[:query] = query  unless query.nil?
       api_params[:headers] = get_headers
-      {{#if bodyParameters}}api_params[:body] = body {{/if}}
+      {{#if bodyParameters}}api_params[:body] = body.to_json unless body.nil? {{/if}}
       @api.{{operation}}(api_params)
     end
