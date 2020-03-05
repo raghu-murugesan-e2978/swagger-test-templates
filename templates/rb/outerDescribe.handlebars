@@ -15,6 +15,7 @@ describe '{{description}}' do
       @schema_object = {{schemaClass}}.new
       @client_object = Public::{{clientClass}}.new(@authorization_headers)
       @test_data = {}
+      @empty_array = []
     end
 {{#each tests}}
   {{this}}
