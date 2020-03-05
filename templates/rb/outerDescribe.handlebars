@@ -2,21 +2,22 @@
 require 'json-schema'
 require 'httparty'
 require 'safe_yaml'
-require "#{__dir__}/../schema/{{schemaFile}}.rb"
-
-schema_object = {{schemaClass}}.new
+require "#{Pathname.pwd}/api/spec/api/schema/{{schemaFile}}.rb"
+require "#{Pathname.pwd}/api/public_api/{{clientFile}}.rb"
 
 describe '{{description}}' do
     before(:all) do
-        define_end_point
+      $conf = YAML.load_file(Dir.pwd + "/api/staging.yml") unless $conf
+      @authorization_headers = {
+        :base_url => $conf["base_urls"],
+        :api_key => $conf["api_key"]
+      }
+      @schema_object = {{schemaClass}}.new
+      @client_object = Public::{{clientClass}}.new(@authorization_headers)
+      @test_data = {}
+      @empty_array = []
     end
 {{#each tests}}
   {{this}}
 {{/each}}
-end
-def define_end_point
-    if ENV["environment"] == nil
-        ENV["environment"] = "server"
-    end
-    $ENDPOINT = YAML.safe_load(File.read(File.expand_path('../../../../config/application.yml', __FILE__)))[ENV["environment"]]["endpoint"]
 end

@@ -1,0 +1,99 @@
+require 'webframe'
+require 'parseconfig'
+# require 'gmail'
+# require 'faker'
+# require 'logging'
+require 'require_all'
+require 'allure-rspec'
+require 'pathname'
+require 'fileutils'
+# require 'headless'
+# require 'os'
+# require 'csv'
+# require 'coderay'
+require 'uri'
+# require 'enumerator'
+require 'pry-byebug'
+require 'base64'
+require 'json'
+# require 'zip'
+# require 'waitutil'
+require 'openssl'
+# require 'pry'
+
+
+
+
+# require_rel "../locators/"
+# require_rel "../libraries/"
+# require_rel "../pages/"
+# require_rel "../api/private_api"
+require_rel "../public_api"
+
+include WebFrame
+
+ # Get the config params from staging/_webframe YAML file
+$conf = File.exist?('_webframe.yml') ? YAML.load_file('_webframe.yml') : YAML.load_file('staging.yml')
+
+# require_rel "../api/spec/api/common_utils/" if $conf['type'] == "api"
+# require_rel "../api/spec/api/data/" if $conf['type'] == "api"
+
+$constants = Constants.new
+reports_metadata = $conf['reports']
+
+#to turn off the certificate verification
+OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+
+
+# FileUtils.mkdir_p("#{Pathname.pwd}/reports/screenshots")
+ run_id = ""
+
+  # tcm_data = $conf['freshrelease'] # to check if required to update test cases run result in tcm tool i.e. Freshrelease
+  # if (tcm_data.length >0) && tcm_data['enabled']
+  #    $tcm_enabled = true
+  #    tcm_url = tcm_data['url']
+  #    project_key = tcm_data['project_id']
+  #    token = tcm_data['token']
+  #    run_id =(!$conf['custom_args'].nil?) ? $conf['custom_args']['run_id'] : nil # get the run id from the CLI via custom tag 'run_id
+  #    regression_suite = Libraries::FreshRelease.new(base_uri: tcm_url, token: token, project_key: project_key, run_id: run_id )
+  # else
+  #   $tcm_enabled = false
+  # end
+
+RSpec.configure do |config|
+  config.filter_run_when_matching :focus
+  config.example_status_persistence_file_path = "reports/examples.txt"
+  config.include AllureRSpec::Adaptor
+  data = { "results" => Array.new }
+
+  config.before(:all) do |e| # resets test cases status
+    $spec_status = 'before_all'
+    # regression_suite.reset_update_data if $tcm_enabled
+  end
+
+  config.after(:each) do |example| # stores the data w.r.t the individual test case run in the suite
+    begin
+        # case_id = example.metadata[:testId]
+        # map_step_id = example.metadata[:map_step_id]
+        # step_group = example.metadata[:step_group]
+        # status = example.exception.nil? ? "passed" : "failed"
+        # case_id.each do |id|
+        #   data["results"].push(regression_suite.get_testcase_status_as_hash(id, status, example)) #store result for each test case ids
+        # end
+    rescue Exception => e
+      puts e.message
+      puts e.backtrace
+    end
+  end
+
+   config.after(:all) do |e| # stored the test cases run status and updates the result in freshrelease test run id passed
+     # update_test_case_statuses = regression_suite.lazy_set_statuses(data) if $tcm_enabled
+     # regression_suite.set_statuses(update_test_case_statuses) if $tcm_enabled
+   end
+end
+
+AllureRSpec.configure do |config|
+  config.output_dir = "reports/allure_" + reports_metadata['allure_spec']
+  config.clean_dir = false
+  config.logging_level = Logger::WARN
+end

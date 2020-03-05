@@ -62,6 +62,7 @@ function getData(swagger, apiPath, operation, response, config, info) {
 
   var responseDescription = (swagger.paths[apiPath][operation].responses[response]) ?
     swagger.paths[apiPath][operation].responses[response].description : '';
+
   var data = { // request payload
     responseCode: response,
     default: response === 'default' ? 'default' : null,
@@ -82,7 +83,8 @@ function getData(swagger, apiPath, operation, response, config, info) {
     requests: 0,
     concurrent: 0,
     pathParams: {},
-    operation: operation
+    operation: operation,
+    operationId: grandProperty['operationId']
   };
 
   // get pathParams from config
@@ -189,6 +191,12 @@ function getData(swagger, apiPath, operation, response, config, info) {
     data.schema = JSON.stringify(data.schema, null, 2);
   }
 
+  if(data.noSchema) {
+    data.noSchema = false;
+    data.schema = {};
+    data.schema = JSON.stringify(data.schema, null, 2);
+  }
+
   // request url case
   if (config.testModule === 'request') {
     data.path = url.format({
@@ -254,7 +262,7 @@ function testGenSchemaDefinition(swagger, apiPath, operation, response, response
     var templateFn;
     var source;
     var data = {
-      schema: JSON.stringify(swagger['paths'][apiPath][operation]['responses'][responseCode]['schema'], null, 2),
+      schema: JSON.stringify(swagger['paths'][apiPath][operation]['responses'][responseCode]['schema'], null, 2) == null ? "{}" : JSON.stringify(swagger['paths'][apiPath][operation]['responses'][responseCode]['schema'], null, 2),
       responseCode: responseCode,
       operation: operation
     };
@@ -285,7 +293,6 @@ function testGenSchemaClass(swagger, apiPath, config) {
          responses = swagger.paths[apiPath][operation].responses;
           _.forEach(responses, function(response, responseCode){
             result = result.concat(testGenSchemaDefinition(swagger, apiPath, operation, response, responseCode, config));
-            //console.log(result);
           });
         });
       // get the data
@@ -297,8 +304,130 @@ function testGenSchemaClass(swagger, apiPath, config) {
     };
 
       result = schemaFn(data);
-//console.log(result);
       return result;
+}
+
+function clientDefinitionGen(swagger, apiPath, operation, config) {
+
+    var result = [];
+    var templateFn;
+    var source;
+    var info = {
+        importValidator: false,
+        importEnv: false,
+        importArete: false,
+        consumes: [],
+        produces: [],
+        security: [],
+        loadTest: null
+      };
+    var data = getData(swagger, apiPath, operation, '200', config, info);
+    data.path = data.path.replace("{", "#{");
+
+    // compile template source and return test string
+    var templatePath = path.join(config.templatesPath, 'client/client_classes/client.handlebars');
+
+    source = fs.readFileSync(templatePath, 'utf8');
+    var schemaFn = handlebars.compile(source, {noEscape: true});
+    result = schemaFn(data);
+
+    return result;
+}
+
+function clientClassGen(swagger, apiPath, config) {
+
+    var result = [];
+    var templateFn;
+    var source;
+    var data;
+    var schemaFn;
+
+
+    source = fs.readFileSync(path.join(config.templatesPath, 'client/client_classes/clientClassDefinitions.handlebars'), 'utf8');
+    schemaFn = handlebars.compile(source, {noEscape: true});
+    _.forEach(swagger.paths[apiPath], function(operations, operation){
+            result = result.concat(clientDefinitionGen(swagger, apiPath, operation, config));
+        });
+      // get the data
+    var p = apiPath.replace(/\//g, "").replace("{", "_").replace("}", "");
+    p = p.charAt(0).toUpperCase() + p.slice(1);
+    data = {
+      clientClass: p + 'Api',
+      methods: result
+    };
+
+      result = schemaFn(data);
+      return result;
+}
+
+function libClientGenerator(config) {
+
+    var result = [];
+    var source;
+    var schemaFn;
+    var data = {};
+
+
+    source = fs.readFileSync(path.join(config.templatesPath, 'client/httparty_client.handlebars'), 'utf8');
+    schemaFn = handlebars.compile(source, {noEscape: true});
+    result = schemaFn(data);
+    return result;
+}
+
+function pubClientGenerator(config) {
+
+    var result = [];
+    var source;
+    var schemaFn;
+    var data = {};
+
+
+    source = fs.readFileSync(path.join(config.templatesPath, 'client/api_client.handlebars'), 'utf8');
+    schemaFn = handlebars.compile(source, {noEscape: true});
+    result = schemaFn(data);
+    return result;
+}
+
+function gemSpecGenerator(config) {
+
+    var result = [];
+    var source;
+    var schemaFn;
+    var data = {};
+
+
+    source = fs.readFileSync(path.join(config.templatesPath, 'gemfile.handlebars'), 'utf8');
+    schemaFn = handlebars.compile(source, {noEscape: true});
+    result = schemaFn(data);
+    return result;
+}
+
+function specHelperGenerator(config) {
+
+    var result = [];
+    var source;
+    var schemaFn;
+    var data = {};
+
+
+    source = fs.readFileSync(path.join(config.templatesPath, 'client/spec_helper.handlebars'), 'utf8');
+    schemaFn = handlebars.compile(source, {noEscape: true});
+    result = schemaFn(data);
+    return result;
+}
+
+function stagingYAMLGenerator(config) {
+
+    var result = [];
+    var source;
+    var schemaFn;
+    var data = {};
+
+
+    source = fs.readFileSync(path.join(config.templatesPath, 'client/staging_yaml.handlebars'), 'utf8');
+    schemaFn = handlebars.compile(source, {noEscape: true});
+    result = schemaFn(data);
+    return result;
 }
 
 /**
@@ -480,7 +609,8 @@ function testGenOperation(swagger, apiPath, operation, config, info) {
 
   var output;
   var data = {
-    description: operation,
+    operation: operation,
+    path: apiPath,
     tests: result
   };
 
@@ -514,6 +644,8 @@ function testGenPath(swagger, apiPath, config) {
     security: [],
     loadTest: null
   };
+  var client_class = apiPath.replace(/\//g, "").replace("{", "_").replace("}", "");
+  client_class = client_class.charAt(0).toUpperCase() + client_class.slice(1);
 
   if (config.loadTest) {
     info.loadTest = config.loadTest;
@@ -547,8 +679,10 @@ function testGenPath(swagger, apiPath, config) {
     importValidator: info.importValidator,
     importEnv: info.importEnv,
     importArete: info.importArete,
-    schemaFile : apiPath.replace(/\//g, '-').substring(1),
-    schemaClass : p
+    schemaFile : apiPath.replace(/\//g, "").replace("{", "_").replace("}", ""),
+    schemaClass : p,
+    clientClass : p + 'Api',
+    clientFile: p.charAt(0).toLowerCase() + p.slice(1)
   };
 
   if (!allDeprecated) {
@@ -614,8 +748,7 @@ function testGen(swagger, config) {
     _.forEach(paths, function(apipath, pathName) {
       // for output file name, replace / with -, and truncate the first /
       // eg: /hello/world -> hello-world
-      filename = sanitize((pathName.replace(/\//g, '-').substring(1))
-        + output[i].name);
+      filename = sanitize((pathName.replace(/\//g, '_').replace('{', '').replace('}', '').substring(1)) + output[i].name);
       // for base path file name, change it to base-path
       if (pathName === '/') {
         filename = 'base-path' + output[i].name;
@@ -668,13 +801,23 @@ function testGen(swagger, config) {
 
     _.forEach(paths, function(paths, pathName) {
         var schemaForTest = testGenSchemaClass(swagger, pathName, config) + "\n\n";
-        //console.log(schemaForTest);
         output.push({
-             name: '../schema/' + sanitize((pathName.replace(/\//g, '-').substring(1))) + '.' + config.lang,
+             name: '../schema/' + sanitize((pathName.replace(/\//g, '_').replace('{', '').replace('}', '').substring(1))) + '.' + config.lang,
              test: schemaForTest
         });
       });
-      //console.log(output);
+    output.push({
+         name: '../../../../Gemfile',
+         test: gemSpecGenerator(config)
+    });
+    output.push({
+         name: '../../spec_helper.rb',
+         test: specHelperGenerator(config)
+    });
+    output.push({
+           name: '../../../staging.yml',
+           test: stagingYAMLGenerator(config)
+      });
   return output;
 }
 
@@ -697,15 +840,73 @@ function schemaGen(swagger, config) {
 
   _.forEach(paths, function(paths, pathName) {
       var schemaForTest = testGenSchemaClass(swagger, pathName, config) + "\n\n";
-      //console.log(schemaForTest);
       output.push({
-           name: '../schema/' + sanitize((pathName.replace(/\//g, '-').substring(1))) + '.' + config.lang,
+           name: sanitize((pathName.replace(/\//g, '_').replace('{', '').replace('}', '').substring(1))) + '.' + config.lang,
            test: schemaForTest
       });
     });
 
   return output;
 }
+
+function clientGen(swagger, config) {
+  var paths = swagger.paths;
+  var targets = config.pathName;
+  var result = [];
+  var output = [];
+  var i = 0;
+  var source;
+  var filename;
+  var schemaTemp;
+  var environment;
+  var ndx = 0;
+  var lang = config.lang;
+
+  config.templatesPath = (config.templatesPath) ? config.templatesPath : path.join(__dirname, 'templates', lang);
+  swagger = deref(swagger);
+  // Schema builder for the tests under schema/schema_{{operations}}
+
+  _.forEach(paths, function(paths, pathName) {
+      var schemaForTest = clientClassGen(swagger, pathName, config) + "\n\n";
+      output.push({
+           name: sanitize((pathName.replace(/\//g, '_').replace('{', '').replace('}', '').substring(1))) + '.' + config.lang,
+           test: schemaForTest
+      });
+    });
+
+  return output;
+}
+
+function libClientGen(config) {
+
+  var output = [];
+  var libClientTemp;
+  var lang = config.lang;
+
+  config.templatesPath = (config.templatesPath) ? config.templatesPath : path.join(__dirname, 'templates', lang);
+  output.push({
+       name: 'httparty_client.rb',
+       test: libClientGenerator(config)
+  });
+
+  return output;
+}
+
+function pubClientGen(config) {
+
+  var output = [];
+  var libClientTemp;
+  var lang = config.lang;
+
+  config.templatesPath = (config.templatesPath) ? config.templatesPath : path.join(__dirname, 'templates', lang);
+  output.push({
+       name: 'api_client.rb',
+       test: pubClientGenerator(config)
+  });
+
+  return output;
+}
+
 
 handlebars.registerHelper('is', helpers.is);
 handlebars.registerHelper('ifCond', helpers.ifCond);
@@ -721,5 +922,8 @@ handlebars.registerHelper('isPdfMediaType', helpers.isPdfMediaType);
 
 module.exports = {
   testGen: testGen,
-  schemaGen: schemaGen
+  schemaGen: schemaGen,
+  libClientGen: libClientGen,
+  pubClientGen : pubClientGen,
+  clientGen: clientGen
 };

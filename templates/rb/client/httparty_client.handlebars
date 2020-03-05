@@ -1,0 +1,90 @@
+require 'httparty'
+
+module Clients
+  class HTTPartyClient
+    include HTTParty
+    self.follow_redirects false
+
+    attr_reader :base_url, :default_headers
+    # to initialize HTTParty
+    # parameters
+    # => base_path:: mandatory
+    # => default_headers:: optional
+    def initialize(base_path)
+      @base_url = base_path
+      $conf = YAML.load_file(Dir.pwd + "/config/default_configs.yml") unless $conf
+      @log_required = $conf['api_log']
+    end
+
+    # to get Authorization for HTTP methods
+    # parameters
+    # => authorization_type:: refer below switch case options
+    # => opts:: options required for corresponding authorization_type
+    def get_authorization(authorization_type, opts)
+      case authorization_type.strip.downcase.gsub(/\s+/, '_')
+      when 'basic_auth'
+        raise "Provide 'Username' & 'Password' for Basic Authorization" unless ((opts.include? :username) && (opts.include? :password))
+        return "Basic #{Base64.strict_encode64(opts[:username] + ':' + opts[:password])}".strip
+      when 'bearer_token'
+        raise "Provide API Key" unless (opts.include? :api_key)
+        return "Bearer #{opts[:api_key]}"
+      when 'digest_auth'
+        # Not Implemented Yet
+      when 'oauth_1.0'
+        # Not Implemented Yet
+      when 'oauth_2.0'
+        # Not Implemented Yet
+      when 'hawk_authentication'
+        # Not Implemented Yet
+      when 'aws_signature'
+        # Not Implemented Yet
+      when 'freshrelease'
+        raise "Provide 'token' for Authorization" unless (opts.include? :token)
+        return "Token token=#{opts[:token]}"
+      end
+    end
+
+    # HTTP method :: GET
+    # parameters
+    # => end_point:: mandatory
+    # => headers:: optional
+    # => query:: optional
+    def get(end_point:, query: Hash.new, headers:)
+      end_point = (end_point.start_with? 'http') ? end_point : (@base_url.chomp('/') + end_point)
+      self.class.get(end_point, query: query, headers: headers)
+    end
+
+    # HTTP method :: POST
+    # parameters
+    # => end_point:: mandatory
+    # => body:: optional
+    # => query:: optional
+    # => headers:: optional
+    def post(end_point:, body: Hash.new, query: Hash.new, headers:)
+      end_point = (end_point.start_with? 'http') ? end_point : (@base_url.chomp('/') + end_point)
+      self.class.post(end_point, body: body, query: query, headers: headers)
+    end
+
+    # HTTP method :: PUT
+    # parameters
+    # => end_point:: mandatory
+    # => body:: optional
+    # => query:: optional
+    # => headers:: optional
+    def put(end_point:, body: Hash.new, query: Hash.new, headers:)
+      end_point = (end_point.start_with? 'http') ? end_point : (@base_url.chomp('/') + end_point)
+      self.class.put(end_point, body: body, query: query, headers: headers)
+    end
+
+    # HTTP method :: DELETE
+    # parameters
+    # => end_point:: mandatory
+    # => body:: optional
+    # => query:: optional
+    # => headers:: optional
+    def delete(end_point:, body: Hash.new, query: Hash.new, headers:)
+      end_point = (end_point.start_with? 'http') ? end_point : (@base_url.chomp('/') + end_point)
+      self.class.delete(end_point, body: body, query: query, headers: headers)
+    end
+  end
+end

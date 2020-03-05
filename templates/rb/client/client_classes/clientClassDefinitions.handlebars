@@ -1,0 +1,15 @@
+module Public
+  require File.expand_path('../../utilities/api_client', __FILE__)
+  class {{clientClass}} < ApiClient
+    public_class_method :new
+
+    def initialize(params)
+      super(params)
+    end
+
+    {{#each methods}}
+        {{this}}
+    {{/each}}
+
+  end
+end

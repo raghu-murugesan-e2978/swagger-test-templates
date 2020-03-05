@@ -1,4 +1,5 @@
-class PublicAPIClient
+class ApiClient
+  require File.expand_path('../httparty_client', __FILE__)
   private_class_method :new
 
   # to initialize Public HTTP
